@@ -1,18 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import App from './App.tsx';
-import './index.css';
-
-const apolloClient = new ApolloClient({
-    uri: 'https://swapi-graphql.eskerda.vercel.app/',
-    cache: new InMemoryCache(),
-});
+import { apolloClient } from './apollo/clients.ts';
 
 createRoot(document.getElementById('root')!).render(
-    <ApolloProvider client={apolloClient}>
-        <StrictMode>
+    <StrictMode>
+        <ApolloProvider client={apolloClient}>
             <App />
-        </StrictMode>
-    </ApolloProvider>
+        </ApolloProvider>
+    </StrictMode>
 );
