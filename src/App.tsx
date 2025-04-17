@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import CharactersTable from './components/CharactersTable';
 import { useCharacters } from './hooks/useCharacters';
 
 function App() {
@@ -11,11 +12,10 @@ function App() {
     }, [characters]);
 
     return (
-        <ul>
-            {characters.map((character) => (
-                <li key={character.id}>{character.name}</li>
-            ))}
-        </ul>
+        <CharactersTable
+            characters={characters}
+            loading={characters.length === 0}
+        />
     );
 }
 
