@@ -1,0 +1,16 @@
+overwrite: true
+schema: 'https://swapi-graphql.eskerda.vercel.app/'
+documents: 'src/graphql/**/*.graphql'
+generates:
+    src/graphql/generated.ts:
+        plugins:
+            - 'typescript'
+            - 'typescript-operations'
+            - 'typescript-react-apollo'
+        config:
+            withHooks: true
+            withHOC: false
+            withComponent: false
+    src/graphql/graphql.schema.json:
+        plugins:
+            - 'introspection'

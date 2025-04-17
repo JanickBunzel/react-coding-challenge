@@ -1,33 +1,40 @@
 {
-  "name": "react-coding-challenge",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@apollo/client": "^3.13.7",
-    "graphql": "^16.10.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "@types/node": "^22.14.1",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.22.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "prettier": "^3.5.3",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.0"
-  }
+    "name": "react-coding-challenge",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc -b && vite build",
+        "lint": "eslint .",
+        "preview": "vite preview",
+        "codegen": "gql-gen --config src/graphql/codegen.yml"
+    },
+    "dependencies": {
+        "@apollo/client": "^3.13.7",
+        "graphql": "^16.10.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "zod": "^3.24.3"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.22.0",
+        "@graphql-codegen/cli": "^5.0.5",
+        "@graphql-codegen/introspection": "^4.0.3",
+        "@graphql-codegen/typescript": "^4.1.6",
+        "@graphql-codegen/typescript-operations": "^4.6.0",
+        "@graphql-codegen/typescript-react-apollo": "^4.3.2",
+        "@types/node": "^22.14.1",
+        "@types/react": "^19.0.10",
+        "@types/react-dom": "^19.0.4",
+        "@vitejs/plugin-react": "^4.3.4",
+        "eslint": "^9.22.0",
+        "eslint-plugin-react-hooks": "^5.2.0",
+        "eslint-plugin-react-refresh": "^0.4.19",
+        "globals": "^16.0.0",
+        "prettier": "^3.5.3",
+        "typescript": "~5.8.3",
+        "typescript-eslint": "^8.26.1",
+        "vite": "^6.3.0"
+    }
 }

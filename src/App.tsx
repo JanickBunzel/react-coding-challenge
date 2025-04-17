@@ -1,5 +1,22 @@
+import { useEffect } from 'react';
+import { useCharacters } from './hooks/useCharacters';
+
 function App() {
-    return <h1>React Coding Challenge</h1>;
+    const { characters } = useCharacters({ first: 10 });
+
+    useEffect(() => {
+        if (characters) {
+            console.log('Characters data:', characters);
+        }
+    }, [characters]);
+
+    return (
+        <ul>
+            {characters.map((character) => (
+                <li key={character.id}>{character.name}</li>
+            ))}
+        </ul>
+    );
 }
 
 export default App;

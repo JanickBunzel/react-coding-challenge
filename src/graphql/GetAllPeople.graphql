@@ -1,0 +1,27 @@
+query GetAllPeople($first: Int, $after: String) {
+    allPeople(first: $first, after: $after) {
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
+        people {
+            id
+            name
+            eyeColor
+            gender
+            height
+            mass
+            homeworld {
+                name
+            }
+            species {
+                name
+            }
+            filmConnection {
+                films {
+                    title
+                }
+            }
+        }
+    }
+}
