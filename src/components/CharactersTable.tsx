@@ -1,13 +1,23 @@
 import { Character } from '@/models/Character';
-import { Table, Tag } from 'antd';
+import { StarFilled, StarOutlined } from '@ant-design/icons';
+import { Button, Table, Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 
 type Props = {
     characters: Character[];
     loading: boolean;
+    favorites: string[];
+    toggleFavorite: (id: string) => void;
+    showOnlyFavorites?: boolean;
 };
 
-const CharactersTable = ({ characters, loading }: Props) => {
+const CharactersTable = ({
+    characters,
+    loading,
+    favorites,
+    toggleFavorite,
+    showOnlyFavorites = false,
+}: Props) => {
     const eyeColorToTag = (eyeColor: string) => {
         const colorMap: Record<string, string> = {
             blue: 'blue',
@@ -23,7 +33,29 @@ const CharactersTable = ({ characters, loading }: Props) => {
         return <Tag color={tagColor}>{eyeColor}</Tag>;
     };
 
+    const displayedCharacters = showOnlyFavorites
+        ? characters.filter((c) => favorites.includes(c.id))
+        : characters;
+
     const columns: ColumnsType<Character> = [
+        {
+            title: 'Favorite',
+            key: 'favorite',
+            width: 70,
+            render: (_, character) => (
+                <Button
+                    type="text"
+                    icon={
+                        favorites.includes(character.id) ? (
+                            <StarFilled style={{ color: 'goldenrod' }} />
+                        ) : (
+                            <StarOutlined />
+                        )
+                    }
+                    onClick={() => toggleFavorite(character.id)}
+                />
+            ),
+        },
         {
             title: 'Name',
             dataIndex: 'name',
@@ -69,16 +101,13 @@ const CharactersTable = ({ characters, loading }: Props) => {
     ];
 
     return (
-        <div>
-            <h1>Star Wars Characters</h1>
-            <Table
-                dataSource={characters}
-                columns={columns}
-                rowKey="id"
-                loading={loading}
-                pagination={false}
-            />
-        </div>
+        <Table
+            dataSource={displayedCharacters}
+            columns={columns}
+            rowKey="id"
+            loading={loading}
+            pagination={false}
+        />
     );
 };
 

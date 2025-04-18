@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { transformToCharacter } from '@/models/Character';
 import { Person, useGetAllPeopleQuery } from '@/graphql/generated';
+import { useFavorites } from './useFavorites';
 
 type Props = {
     first?: number;
@@ -15,8 +16,7 @@ export const useCharacters = ({ first = 10, after = null }: Props) => {
     });
     console.log('Api data:', data);
 
-    // TODO implement favorites functionality
-    const favorites: string[] = [];
+    const { favorites } = useFavorites();
 
     const characters = useMemo(() => {
         const people = data?.allPeople?.people || [];
