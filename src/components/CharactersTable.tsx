@@ -1,10 +1,11 @@
-import { Character } from '@/models/Character';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { Button, Table, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import { Character } from '@/models/Character';
 
 type Props = {
     characters: Character[];
+    filteredCharacters: Character[];
     loadingInitial: boolean;
     loadingNext: boolean;
     hasNextPage: boolean;
@@ -16,6 +17,7 @@ type Props = {
 
 const CharactersTable = ({
     characters,
+    filteredCharacters,
     loadingInitial,
     loadingNext,
     hasNextPage,
@@ -40,8 +42,8 @@ const CharactersTable = ({
     };
 
     const displayedCharacters = showOnlyFavorites
-        ? characters.filter((c) => favorites.includes(c.id))
-        : characters;
+        ? filteredCharacters.filter((c) => favorites.includes(c.id))
+        : filteredCharacters;
 
     const columns: ColumnsType<Character> = [
         {
@@ -129,9 +131,10 @@ const CharactersTable = ({
 
             <span>
                 Showing {displayedCharacters.length}
-                {showOnlyFavorites &&
-                    ` favorite${displayedCharacters.length !== 1 ? 's' : ''} out of ${characters.length} `}
-                characters
+                {displayedCharacters.length < characters.length
+                    ? ` out of ${characters.length} `
+                    : ' '}
+                Characters
             </span>
         </>
     );
