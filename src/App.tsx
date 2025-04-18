@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Checkbox, Layout } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
 import CharactersTable from './components/CharactersTable';
@@ -12,8 +12,12 @@ function App() {
         useCharacters({
             first: PAGE_SIZE,
         });
-    const { favorites, toggleFavorite } = useFavorites();
-    const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+    const {
+        favorites,
+        toggleFavorite,
+        showOnlyFavorites,
+        setShowOnlyFavorites,
+    } = useFavorites();
 
     useEffect(() => console.log('Characters data:', characters), [characters]);
 

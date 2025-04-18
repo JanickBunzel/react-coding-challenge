@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const FAVORITES_STORAGE_KEY = 'star-wars-favorites';
+const SHOW_ONLY_FAVORITES_KEY = 'show-only-favorites';
 
 export const useFavorites = () => {
     const [favorites, setFavorites] = useState<string[]>(() => {
@@ -10,6 +11,19 @@ export const useFavorites = () => {
         } catch (e) {
             console.error('Error loading favorites from localStorage:', e);
             return [];
+        }
+    });
+
+    const [showOnlyFavorites, setShowOnlyFavorites] = useState<boolean>(() => {
+        try {
+            const stored = localStorage.getItem(SHOW_ONLY_FAVORITES_KEY);
+            return stored ? JSON.parse(stored) : false;
+        } catch (e) {
+            console.error(
+                'Error loading showOnlyFavorites from localStorage:',
+                e
+            );
+            return false;
         }
     });
 
@@ -23,6 +37,17 @@ export const useFavorites = () => {
             console.error('Error saving favorites to localStorage:', e);
         }
     }, [favorites]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                SHOW_ONLY_FAVORITES_KEY,
+                JSON.stringify(showOnlyFavorites)
+            );
+        } catch (e) {
+            console.error('Error saving showOnlyFavorites to localStorage:', e);
+        }
+    }, [showOnlyFavorites]);
 
     const toggleFavorite = (id: string) => {
         setFavorites((prevFavs) => {
@@ -38,5 +63,7 @@ export const useFavorites = () => {
         favorites,
         toggleFavorite,
         isFavorite: (id: string) => favorites.includes(id),
+        showOnlyFavorites,
+        setShowOnlyFavorites,
     };
 };
