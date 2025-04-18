@@ -1,11 +1,14 @@
 import { Character } from '@/models/Character';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { Button, Table, Tag } from 'antd';
+import { Button, Table, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 
 type Props = {
     characters: Character[];
-    loading: boolean;
+    loadingInitial: boolean;
+    loadingNext: boolean;
+    hasNextPage: boolean;
+    loadMore?: () => void;
     favorites: string[];
     toggleFavorite: (id: string) => void;
     showOnlyFavorites?: boolean;
@@ -13,8 +16,11 @@ type Props = {
 
 const CharactersTable = ({
     characters,
-    loading,
-    favorites,
+    loadingInitial,
+    loadingNext,
+    hasNextPage,
+    loadMore,
+    favorites = [],
     toggleFavorite,
     showOnlyFavorites = false,
 }: Props) => {
@@ -101,13 +107,33 @@ const CharactersTable = ({
     ];
 
     return (
-        <Table
-            dataSource={displayedCharacters}
-            columns={columns}
-            rowKey="id"
-            loading={loading}
-            pagination={false}
-        />
+        <>
+            <Table
+                dataSource={displayedCharacters}
+                columns={columns}
+                rowKey="id"
+                loading={loadingInitial}
+                pagination={false}
+            />
+
+            <Tooltip title={!hasNextPage ? 'All Characters loaded' : ''}>
+                <Button
+                    type="primary"
+                    onClick={loadMore}
+                    loading={loadingNext}
+                    disabled={loadingNext || !hasNextPage}
+                >
+                    Load More
+                </Button>
+            </Tooltip>
+
+            <span>
+                Showing {displayedCharacters.length}
+                {showOnlyFavorites &&
+                    ` favorite${displayedCharacters.length !== 1 ? 's' : ''} out of ${characters.length} `}
+                characters
+            </span>
+        </>
     );
 };
 

@@ -1,48 +1,75 @@
-import { useMemo } from 'react';
-import { transformToCharacter } from '@/models/Character';
+import { useEffect, useRef, useState } from 'react';
 import { Person, useGetAllPeopleQuery } from '@/graphql/generated';
+import { Character, transformToCharacter } from '@/models/Character';
 import { useFavorites } from './useFavorites';
 
 type Props = {
-    first?: number;
-    after?: string | null;
+    first: number;
 };
 
-export const useCharacters = ({ first = 10, after = null }: Props) => {
+export const useCharacters = ({ first }: Props) => {
+    const [characters, setCharacters] = useState<Character[]>([]);
+    const { favorites } = useFavorites();
+
     const { loading, error, data, fetchMore } = useGetAllPeopleQuery({
-        variables: { first, after },
+        variables: { first, after: null },
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'cache-first',
     });
-    console.log('Api data:', data);
+    const [pageInfo, setPageInfo] = useState<{
+        hasNextPage: boolean;
+        endCursor: string | null;
+    }>({ hasNextPage: false, endCursor: null });
+    const [loadingNext, setLoadingNext] = useState(false);
+    const initialLoadCompleted = useRef(false);
+    const loadingInitial = loading && !initialLoadCompleted.current;
 
-    const { favorites } = useFavorites();
+    const appendPage = (page: typeof data) => {
+        if (!page?.allPeople?.people) return;
 
-    const characters = useMemo(() => {
-        const people = data?.allPeople?.people || [];
-        return people
-            .filter((person): person is Person => person !== null)
-            .map((person) => transformToCharacter(person, favorites));
-    }, [data, favorites]);
+        setCharacters((prev) => {
+            const pervIds = new Set(prev.map((c) => c.id));
 
-    const pageInfo = data?.allPeople?.pageInfo || {
-        hasNextPage: false,
-        endCursor: null,
+            const incomingCharacters = (page.allPeople?.people ?? [])
+                .filter((p): p is Person => p !== null && !pervIds.has(p.id))
+                .map((p) => transformToCharacter(p, favorites));
+
+            return [...prev, ...incomingCharacters];
+        });
+
+        setPageInfo({
+            hasNextPage: page.allPeople.pageInfo.hasNextPage,
+            endCursor: page.allPeople.pageInfo.endCursor ?? null,
+        });
     };
 
     const loadMore = () => {
-        if (pageInfo.hasNextPage && pageInfo.endCursor) {
-            fetchMore({
-                variables: {
-                    after: pageInfo.endCursor,
-                },
-            });
-        }
+        if (!pageInfo.hasNextPage || !pageInfo.endCursor) return;
+
+        setLoadingNext(true);
+
+        fetchMore({
+            variables: {
+                first: first,
+                after: pageInfo.endCursor,
+            },
+        })
+            .then((nextPage) => appendPage(nextPage.data))
+            .catch((e) => console.error('Error fetching next page', e))
+            .finally(() => setLoadingNext(false));
     };
+
+    useEffect(() => {
+        if (data?.allPeople?.people && !initialLoadCompleted.current)
+            initialLoadCompleted.current = true;
+
+        appendPage(data);
+    }, [data]);
 
     return {
         characters,
-        loading,
+        loadingInitial,
+        loadingNext,
         error,
         pageInfo,
         loadMore,

@@ -5,39 +5,41 @@ import CharactersTable from './components/CharactersTable';
 import { useCharacters } from './hooks/useCharacters';
 import { useFavorites } from './hooks/useFavorites';
 
+const PAGE_SIZE = 10;
+
 function App() {
-    const { characters, loading } = useCharacters({ first: 10 });
+    const { characters, loadingInitial, loadingNext, pageInfo, loadMore } =
+        useCharacters({
+            first: PAGE_SIZE,
+        });
     const { favorites, toggleFavorite } = useFavorites();
     const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
-    useEffect(() => {
-        if (characters.length > 0) {
-            console.log('Characters data:', characters);
-        }
-    }, [characters]);
+    useEffect(() => console.log('Characters data:', characters), [characters]);
 
     return (
-        <Layout className="app-container">
+        <Layout>
             <Header>
                 <h1>Start Wars Character reference book</h1>
             </Header>
 
             <Content>
-                <div className="controls">
-                    <Checkbox
-                        checked={showOnlyFavorites}
-                        onChange={(e) => setShowOnlyFavorites(e.target.checked)}
-                    >
-                        Only favorites
-                    </Checkbox>
-                    <CharactersTable
-                        characters={characters}
-                        loading={loading}
-                        favorites={favorites}
-                        toggleFavorite={toggleFavorite}
-                        showOnlyFavorites={showOnlyFavorites}
-                    />
-                </div>
+                <Checkbox
+                    checked={showOnlyFavorites}
+                    onChange={(e) => setShowOnlyFavorites(e.target.checked)}
+                >
+                    Only favorites
+                </Checkbox>
+                <CharactersTable
+                    characters={characters}
+                    loadingInitial={loadingInitial}
+                    loadingNext={loadingNext}
+                    hasNextPage={pageInfo.hasNextPage}
+                    loadMore={loadMore}
+                    favorites={favorites}
+                    toggleFavorite={toggleFavorite}
+                    showOnlyFavorites={showOnlyFavorites}
+                />
             </Content>
         </Layout>
     );
