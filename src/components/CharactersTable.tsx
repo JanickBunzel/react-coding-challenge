@@ -175,6 +175,8 @@ const CharactersTable = ({
                 visible={showDetails}
                 onClose={() => setShowDetails(false)}
                 eyeColorToTag={eyeColorToTag}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
             />
         </>
     );

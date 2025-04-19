@@ -4,12 +4,15 @@ import Item from 'antd/es/list/Item';
 import Title from 'antd/es/typography/Title';
 import Text from 'antd/es/typography/Text';
 import { Character } from '@/models/Character';
+import { StarFilled, StarOutlined } from '@ant-design/icons';
 
 type Props = {
     character: Character | null;
     visible: boolean;
     onClose: () => void;
     eyeColorToTag: (eyeColor: string) => JSX.Element;
+    favorites: string[];
+    toggleFavorite: (id: string) => void;
 };
 
 const CharacterPreview = ({
@@ -17,6 +20,8 @@ const CharacterPreview = ({
     visible,
     onClose,
     eyeColorToTag,
+    favorites,
+    toggleFavorite,
 }: Props) => {
     if (!character) return null;
 
@@ -26,9 +31,21 @@ const CharacterPreview = ({
             open={visible}
             onCancel={onClose}
             footer={
-                <Button type="primary" onClick={onClose}>
-                    Close
-                </Button>
+                <>
+                    <Button
+                        icon={
+                            favorites.includes(character.id) ? (
+                                <StarFilled style={{ color: 'goldenrod' }} />
+                            ) : (
+                                <StarOutlined />
+                            )
+                        }
+                        onClick={() => toggleFavorite(character.id)}
+                    />
+                    <Button type="primary" onClick={onClose}>
+                        Close
+                    </Button>
+                </>
             }
         >
             <Descriptions>
