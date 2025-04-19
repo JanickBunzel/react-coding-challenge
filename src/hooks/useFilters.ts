@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Character } from '@/models/Character';
 
 export type Filters = {
@@ -41,20 +41,25 @@ export const useFilters = (characters: Character[]) => {
         films: [],
     });
 
-    const updateFilter = (field: keyof Filters, selected: string[]) => {
-        setFilters((prev) => ({
-            ...prev,
-            [field]: selected,
-        }));
-    };
+    const updateFilter = useCallback(
+        (field: keyof Filters, selected: string[]) =>
+            setFilters((prev) => ({
+                ...prev,
+                [field]: selected,
+            })),
+        [filters]
+    );
 
-    const resetFilters = () =>
-        setFilters({
-            gender: [],
-            eyeColor: [],
-            species: [],
-            films: [],
-        });
+    const resetFilters = useCallback(
+        () =>
+            setFilters({
+                gender: [],
+                eyeColor: [],
+                species: [],
+                films: [],
+            }),
+        []
+    );
 
     const hasActiveFilters = Object.values(filters).some((vs) => vs.length > 0);
 

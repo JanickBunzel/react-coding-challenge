@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Button, Card, Select, Space } from 'antd';
 import { Filters, getFilterOptions } from '@/hooks/useFilters';
 import { Character } from '@/models/Character';
@@ -17,6 +18,15 @@ const CharacterFilters = ({
     resetFilters,
     hasActiveFilters,
 }: Props) => {
+    const filterOptions = useMemo(() => {
+        return {
+            gender: getFilterOptions(characters, 'gender'),
+            eyeColor: getFilterOptions(characters, 'eyeColor'),
+            species: getFilterOptions(characters, 'species'),
+            films: getFilterOptions(characters, 'films'),
+        };
+    }, [characters]);
+
     const createSelect = ({
         mode,
         id,
@@ -42,7 +52,7 @@ const CharacterFilters = ({
                           : [];
                     updateFilter(id, values);
                 }}
-                options={getFilterOptions(characters, id)}
+                options={filterOptions[id]}
             />
         );
     };

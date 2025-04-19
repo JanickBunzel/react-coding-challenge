@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const FAVORITES_STORAGE_KEY = 'star-wars-favorites';
 const SHOW_ONLY_FAVORITES_KEY = 'show-only-favorites';
@@ -49,15 +49,18 @@ export const useFavorites = () => {
         }
     }, [showOnlyFavorites]);
 
-    const toggleFavorite = (id: string) => {
-        setFavorites((prevFavs) => {
-            if (prevFavs.includes(id)) {
-                return prevFavs.filter((favId) => favId !== id);
-            } else {
-                return [...prevFavs, id];
-            }
-        });
-    };
+    const toggleFavorite = useCallback(
+        (id: string) => {
+            setFavorites((prevFavs) => {
+                if (prevFavs.includes(id)) {
+                    return prevFavs.filter((favId) => favId !== id);
+                } else {
+                    return [...prevFavs, id];
+                }
+            });
+        },
+        [favorites]
+    );
 
     return {
         favorites,

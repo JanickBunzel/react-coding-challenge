@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
     InfoCircleOutlined,
     StarFilled,
@@ -41,7 +41,7 @@ const CharactersTable = ({
         setShowDetails(true);
     };
 
-    const eyeColorToTag = (eyeColor: string): JSX.Element => {
+    const eyeColorToTag = useCallback((eyeColor: string): JSX.Element => {
         if (!eyeColor) return <Tag>-</Tag>;
 
         const colorMap: Record<string, string> = {
@@ -56,81 +56,90 @@ const CharactersTable = ({
 
         const tagColor = colorMap[eyeColor.toLowerCase()] || 'default';
         return <Tag color={tagColor}>{eyeColor}</Tag>;
-    };
+    }, []);
 
-    const displayedCharacters = showOnlyFavorites
-        ? filteredCharacters.filter((c) => favorites.includes(c.id))
-        : filteredCharacters;
+    const displayedCharacters = useMemo(() => {
+        return showOnlyFavorites
+            ? filteredCharacters.filter((c) => favorites.includes(c.id))
+            : filteredCharacters;
+    }, [showOnlyFavorites, filteredCharacters, favorites]);
 
-    const columns: ColumnsType<Character> = [
-        {
-            title: 'Actions',
-            key: 'actions',
-            width: 120,
-            render: (_, character) => (
-                <Space>
-                    <Button
-                        type="text"
-                        icon={
-                            favorites.includes(character.id) ? (
-                                <StarFilled style={{ color: 'goldenrod' }} />
-                            ) : (
-                                <StarOutlined />
-                            )
-                        }
-                        onClick={() => toggleFavorite(character.id)}
-                    />
-                    <Button
-                        type="text"
-                        icon={<InfoCircleOutlined />}
-                        onClick={() => handleViewCharacterDetails(character)}
-                    />
-                </Space>
-            ),
-        },
-        {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            render: (name) => name || '-',
-        },
-        {
-            title: 'Height',
-            dataIndex: 'height',
-            key: 'height',
-            render: (height) => (height ? height + ' cm' : '-'),
-        },
-        {
-            title: 'Weight',
-            dataIndex: 'weight',
-            key: 'weight',
-            render: (weight) => (weight ? weight + ' kg' : '-'),
-        },
-        {
-            title: 'Home Planet',
-            dataIndex: 'homeworld',
-            key: 'homeworld',
-            render: (homeworld) => homeworld || '-',
-        },
-        {
-            title: 'Species',
-            dataIndex: 'species',
-            key: 'species',
-            render: (species) => species || '-',
-        },
-        {
-            title: 'Gender',
-            dataIndex: 'gender',
-            key: 'gender',
-            render: (gender) => gender || '-',
-        },
-        {
-            title: 'Eye Color',
-            dataIndex: 'eyeColor',
-            key: 'eyeColor',
-            render: (eyeColor) => eyeColorToTag(eyeColor),
-        },
-    ];
+    const columns = useMemo<ColumnsType<Character>>(
+        () => [
+            {
+                title: 'Actions',
+                key: 'actions',
+                width: 120,
+                render: (_, character) => (
+                    <Space>
+                        <Button
+                            type="text"
+                            icon={
+                                favorites.includes(character.id) ? (
+                                    <StarFilled
+                                        style={{ color: 'goldenrod' }}
+                                    />
+                                ) : (
+                                    <StarOutlined />
+                                )
+                            }
+                            onClick={() => toggleFavorite(character.id)}
+                        />
+                        <Button
+                            type="text"
+                            icon={<InfoCircleOutlined />}
+                            onClick={() =>
+                                handleViewCharacterDetails(character)
+                            }
+                        />
+                    </Space>
+                ),
+            },
+            {
+                title: 'Name',
+                dataIndex: 'name',
+                key: 'name',
+                render: (name) => name || '-',
+            },
+            {
+                title: 'Height',
+                dataIndex: 'height',
+                key: 'height',
+                render: (height) => (height ? height + ' cm' : '-'),
+            },
+            {
+                title: 'Weight',
+                dataIndex: 'weight',
+                key: 'weight',
+                render: (weight) => (weight ? weight + ' kg' : '-'),
+            },
+            {
+                title: 'Home Planet',
+                dataIndex: 'homeworld',
+                key: 'homeworld',
+                render: (homeworld) => homeworld || '-',
+            },
+            {
+                title: 'Species',
+                dataIndex: 'species',
+                key: 'species',
+                render: (species) => species || '-',
+            },
+            {
+                title: 'Gender',
+                dataIndex: 'gender',
+                key: 'gender',
+                render: (gender) => gender || '-',
+            },
+            {
+                title: 'Eye Color',
+                dataIndex: 'eyeColor',
+                key: 'eyeColor',
+                render: (eyeColor) => eyeColorToTag(eyeColor),
+            },
+        ],
+        [favorites]
+    );
 
     return (
         <>

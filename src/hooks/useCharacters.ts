@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Person, useGetAllPeopleQuery } from '@/graphql/generated';
 import { Character, transformToCharacter } from '@/models/Character';
 import { useFavorites } from './useFavorites';
@@ -16,34 +16,41 @@ export const useCharacters = ({ first }: Props) => {
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'cache-first',
     });
+
     const [pageInfo, setPageInfo] = useState<{
         hasNextPage: boolean;
         endCursor: string | null;
     }>({ hasNextPage: false, endCursor: null });
+
     const [loadingNext, setLoadingNext] = useState(false);
     const initialLoadCompleted = useRef(false);
     const loadingInitial = loading && !initialLoadCompleted.current;
 
-    const appendPage = (page: typeof data) => {
-        if (!page?.allPeople?.people) return;
+    const appendPage = useCallback(
+        (page: typeof data) => {
+            if (!page?.allPeople?.people) return;
 
-        setCharacters((prev) => {
-            const pervIds = new Set(prev.map((c) => c.id));
+            setCharacters((prev) => {
+                const pervIds = new Set(prev.map((c) => c.id));
 
-            const incomingCharacters = (page.allPeople?.people ?? [])
-                .filter((p): p is Person => p !== null && !pervIds.has(p.id))
-                .map((p) => transformToCharacter(p, favorites));
+                const incomingCharacters = (page.allPeople?.people ?? [])
+                    .filter(
+                        (p): p is Person => p !== null && !pervIds.has(p.id)
+                    )
+                    .map((p) => transformToCharacter(p, favorites));
 
-            return [...prev, ...incomingCharacters];
-        });
+                return [...prev, ...incomingCharacters];
+            });
 
-        setPageInfo({
-            hasNextPage: page.allPeople.pageInfo.hasNextPage,
-            endCursor: page.allPeople.pageInfo.endCursor ?? null,
-        });
-    };
+            setPageInfo({
+                hasNextPage: page.allPeople.pageInfo.hasNextPage,
+                endCursor: page.allPeople.pageInfo.endCursor ?? null,
+            });
+        },
+        [favorites]
+    );
 
-    const loadMore = () => {
+    const loadMore = useCallback(() => {
         if (!pageInfo.hasNextPage || !pageInfo.endCursor) return;
 
         setLoadingNext(true);
@@ -57,14 +64,14 @@ export const useCharacters = ({ first }: Props) => {
             .then((nextPage) => appendPage(nextPage.data))
             .catch((e) => console.error('Error fetching next page', e))
             .finally(() => setLoadingNext(false));
-    };
+    }, [pageInfo, fetchMore, first, appendPage]);
 
     useEffect(() => {
         if (data?.allPeople?.people && !initialLoadCompleted.current)
             initialLoadCompleted.current = true;
 
         appendPage(data);
-    }, [data]);
+    }, [data, appendPage]);
 
     return {
         characters,
