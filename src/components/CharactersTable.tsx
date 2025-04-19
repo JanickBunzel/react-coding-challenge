@@ -1,7 +1,13 @@
-import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { Button, Table, Tag, Tooltip } from 'antd';
+import { useState } from 'react';
+import {
+    InfoCircleOutlined,
+    StarFilled,
+    StarOutlined,
+} from '@ant-design/icons';
+import { Button, Space, Table, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { Character } from '@/models/Character';
+import CharacterPreview from '@/components/CharacterPreview';
 
 type Props = {
     characters: Character[];
@@ -26,7 +32,18 @@ const CharactersTable = ({
     toggleFavorite,
     showOnlyFavorites = false,
 }: Props) => {
-    const eyeColorToTag = (eyeColor: string) => {
+    const [selectedCharacter, setSelectedCharacter] =
+        useState<Character | null>(null);
+    const [showDetails, setShowDetails] = useState(false);
+
+    const handleViewCharacterDetails = (character: Character) => {
+        setSelectedCharacter(character);
+        setShowDetails(true);
+    };
+
+    const eyeColorToTag = (eyeColor: string): JSX.Element => {
+        if (!eyeColor) return <Tag>-</Tag>;
+
         const colorMap: Record<string, string> = {
             blue: 'blue',
             brown: 'brown',
@@ -47,21 +64,28 @@ const CharactersTable = ({
 
     const columns: ColumnsType<Character> = [
         {
-            title: 'Favorite',
-            key: 'favorite',
-            width: 70,
+            title: 'Actions',
+            key: 'actions',
+            width: 120,
             render: (_, character) => (
-                <Button
-                    type="text"
-                    icon={
-                        favorites.includes(character.id) ? (
-                            <StarFilled style={{ color: 'goldenrod' }} />
-                        ) : (
-                            <StarOutlined />
-                        )
-                    }
-                    onClick={() => toggleFavorite(character.id)}
-                />
+                <Space>
+                    <Button
+                        type="text"
+                        icon={
+                            favorites.includes(character.id) ? (
+                                <StarFilled style={{ color: 'goldenrod' }} />
+                            ) : (
+                                <StarOutlined />
+                            )
+                        }
+                        onClick={() => toggleFavorite(character.id)}
+                    />
+                    <Button
+                        type="text"
+                        icon={<InfoCircleOutlined />}
+                        onClick={() => handleViewCharacterDetails(character)}
+                    />
+                </Space>
             ),
         },
         {
@@ -104,7 +128,7 @@ const CharactersTable = ({
             title: 'Eye Color',
             dataIndex: 'eyeColor',
             key: 'eyeColor',
-            render: (eyeColor) => eyeColorToTag(eyeColor) || '-',
+            render: (eyeColor) => eyeColorToTag(eyeColor),
         },
     ];
 
@@ -136,6 +160,13 @@ const CharactersTable = ({
                     : ' '}
                 Characters
             </span>
+
+            <CharacterPreview
+                character={selectedCharacter}
+                visible={showDetails}
+                onClose={() => setShowDetails(false)}
+                eyeColorToTag={eyeColorToTag}
+            />
         </>
     );
 };
