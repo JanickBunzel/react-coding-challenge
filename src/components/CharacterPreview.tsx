@@ -22,7 +22,7 @@ const CharacterPreview = ({
 
     return (
         <Modal
-            title={<Title level={4}>{character.name || 'Unknown'}</Title>}
+            title={<Title level={4}>{character.name || '-'}</Title>}
             open={visible}
             onCancel={onClose}
             footer={
@@ -32,24 +32,36 @@ const CharacterPreview = ({
             }
         >
             <Descriptions>
-                <DescriptionsItem label="Height">
-                    {character.height || '-'}
-                </DescriptionsItem>
-                <DescriptionsItem label="Weight">
-                    {character.weight || '-'}
-                </DescriptionsItem>
-                <DescriptionsItem label="Home Planet">
-                    {character.homeworld || '-'}
-                </DescriptionsItem>
-                <DescriptionsItem label="Species">
-                    {character.species || '-'}
-                </DescriptionsItem>
-                <DescriptionsItem label="Gender">
-                    {character.gender || '-'}
-                </DescriptionsItem>
-                <DescriptionsItem label="Eye Color">
-                    {eyeColorToTag(character.eyeColor || '-')}
-                </DescriptionsItem>
+                {[
+                    {
+                        label: 'Height',
+                        content: (character.height || '-') + ' cm',
+                    },
+                    {
+                        label: 'Weight',
+                        content: (character.weight || '-') + ' kg',
+                    },
+                    {
+                        label: 'Home Planet',
+                        content: character.homeworld || '-',
+                    },
+                    {
+                        label: 'Species',
+                        content: character.species || '-',
+                    },
+                    {
+                        label: 'Gender',
+                        content: character.gender || '-',
+                    },
+                    {
+                        label: 'Eye Color',
+                        content: eyeColorToTag(character.eyeColor || '-'),
+                    },
+                ].map((cd) => (
+                    <DescriptionsItem label={cd.label} key={cd.label}>
+                        {cd.content}
+                    </DescriptionsItem>
+                ))}
             </Descriptions>
 
             <Title level={5}>Appears in movies:</Title>

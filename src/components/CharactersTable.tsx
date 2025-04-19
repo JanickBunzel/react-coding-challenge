@@ -98,13 +98,13 @@ const CharactersTable = ({
             title: 'Height',
             dataIndex: 'height',
             key: 'height',
-            render: (height) => height || '-',
+            render: (height) => (height ? height + ' cm' : '-'),
         },
         {
             title: 'Weight',
             dataIndex: 'weight',
             key: 'weight',
-            render: (weight) => weight || '-',
+            render: (weight) => (weight ? weight + ' kg' : '-'),
         },
         {
             title: 'Home Planet',
