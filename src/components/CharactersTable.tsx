@@ -1,8 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import {
     InfoCircleOutlined,
+    ManOutlined,
     StarFilled,
     StarOutlined,
+    WomanOutlined,
 } from '@ant-design/icons';
 import { Button, Space, Table, Tag, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -41,8 +43,8 @@ const CharactersTable = ({
         setShowDetails(true);
     };
 
-    const eyeColorToTag = useCallback((eyeColor: string): JSX.Element => {
-        if (!eyeColor) return <Tag>-</Tag>;
+    const eyeColorToTag = useCallback((eyeColor: string): JSX.Element[] => {
+        if (!eyeColor) return [<Tag>-</Tag>];
 
         const colorMap: Record<string, string> = {
             blue: 'blue',
@@ -54,8 +56,14 @@ const CharactersTable = ({
             black: 'black',
         };
 
-        const tagColor = colorMap[eyeColor.toLowerCase()] || 'default';
-        return <Tag color={tagColor}>{eyeColor}</Tag>;
+        return eyeColor
+            .split(',')
+            .map((c) => c.trim().toLowerCase())
+            .map((c) => (
+                <Tag color={colorMap[c] || 'default'} key={c}>
+                    {c}
+                </Tag>
+            ));
     }, []);
 
     const displayedCharacters = useMemo(() => {
@@ -99,7 +107,7 @@ const CharactersTable = ({
                 title: 'Name',
                 dataIndex: 'name',
                 key: 'name',
-                render: (name) => name || '-',
+                render: (name) => <strong>{name || '-'}</strong>,
             },
             {
                 title: 'Height',
@@ -129,7 +137,20 @@ const CharactersTable = ({
                 title: 'Gender',
                 dataIndex: 'gender',
                 key: 'gender',
-                render: (gender) => gender || '-',
+                render: (gender) => {
+                    switch (gender) {
+                        case 'male':
+                            return (
+                                <ManOutlined style={{ color: 'darkblue' }} />
+                            );
+                        case 'female':
+                            return (
+                                <WomanOutlined style={{ color: 'orchid' }} />
+                            );
+                        default:
+                            return gender ? gender : '-';
+                    }
+                },
             },
             {
                 title: 'Eye Color',

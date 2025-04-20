@@ -10,7 +10,7 @@ type Props = {
     character: Character | null;
     visible: boolean;
     onClose: () => void;
-    eyeColorToTag: (eyeColor: string) => JSX.Element;
+    eyeColorToTag: (eyeColor: string) => JSX.Element[];
     favorites: string[];
     toggleFavorite: (id: string) => void;
 };
