@@ -1,0 +1,20 @@
+query GetFilterOptions {
+    allFilms {
+        films {
+            title
+        }
+    }
+
+    allSpecies {
+        species {
+            name
+        }
+    }
+
+    allPeople {
+        people {
+            gender
+            eyeColor
+        }
+    }
+}

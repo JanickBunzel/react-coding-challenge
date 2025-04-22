@@ -1,25 +1,16 @@
-import { useMemo } from 'react';
 import { Button, Card, Select, Space } from 'antd';
-import { Filters, getFilterOptions } from '@/hooks/useFilters';
-import { Character } from '@/models/Character';
+import { Filters } from '@/models/Filters';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 type Props = {
-    characters: Character[];
     filters: Filters;
     updateFilter: (field: keyof Filters, values: string[]) => void;
     resetFilters: () => void;
     hasActiveFilters: boolean;
 };
 
-const CharacterFilters = ({ characters, filters, updateFilter, resetFilters, hasActiveFilters }: Props) => {
-    const filterOptions = useMemo(() => {
-        return {
-            gender: getFilterOptions(characters, 'gender'),
-            eyeColor: getFilterOptions(characters, 'eyeColor'),
-            species: getFilterOptions(characters, 'species'),
-            films: getFilterOptions(characters, 'films'),
-        };
-    }, [characters]);
+const CharacterFilters = ({ filters, updateFilter, resetFilters, hasActiveFilters }: Props) => {
+    const { filterValues } = useFilterOptions();
 
     const createSelect = ({ mode, id, placeholder }: { mode?: 'multiple'; id: keyof Filters; placeholder: string }) => {
         return (
@@ -34,7 +25,10 @@ const CharacterFilters = ({ characters, filters, updateFilter, resetFilters, has
                     const values = Array.isArray(selected) ? selected : selected ? [selected] : [];
                     updateFilter(id, values);
                 }}
-                options={filterOptions[id]}
+                options={filterValues[id].map((v) => ({
+                    label: v,
+                    value: v,
+                }))}
             />
         );
     };

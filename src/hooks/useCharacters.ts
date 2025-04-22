@@ -11,8 +11,6 @@ export const useCharacters = () => {
 
     const { loading, error, data, fetchMore } = useGetAllPeopleQuery({
         variables: { first: PAGE_SIZE, after: null },
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'cache-first',
     });
 
     const [pageInfo, setPageInfo] = useState<{
