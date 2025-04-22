@@ -34,7 +34,6 @@ function App() {
                 </Checkbox>
 
                 <CharacterFilters
-                    characters={characters}
                     filters={filters}
                     updateFilter={updateFilter}
                     resetFilters={resetFilters}

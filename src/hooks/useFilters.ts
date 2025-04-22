@@ -1,37 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Character } from '@/models/Character';
-
-export type Filters = {
-    gender: string[];
-    eyeColor: string[];
-    species: string[];
-    films: string[];
-};
-
-export const getFilterOptions = (
-    characters: Character[],
-    field: keyof Character
-): { label: string; value: string }[] => {
-    const values = new Set<string>();
-
-    characters.forEach((c) => {
-        if (field === 'films') {
-            c.films.forEach((f) => {
-                if (f) values.add(f);
-            });
-        } else {
-            const value = c[field];
-            if (value && typeof value === 'string') values.add(value);
-        }
-    });
-
-    return Array.from(values)
-        .sort()
-        .map((option) => ({
-            label: option,
-            value: option,
-        }));
-};
+import { Filters } from '@/models/Filters';
 
 export const useFilters = () => {
     const [filters, setFilters] = useState<Filters>({

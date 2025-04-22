@@ -1313,6 +1313,11 @@ export type GetAllPeopleQueryVariables = Exact<{
 
 export type GetAllPeopleQuery = { __typename?: 'Query', allPeople?: { __typename?: 'PeopleConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, people?: Array<{ __typename?: 'Person', id: string, name?: string | null, eyeColor?: string | null, gender?: string | null, height?: number | null, mass?: number | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null> | null } | null };
 
+export type GetFilterOptionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFilterOptionsQuery = { __typename?: 'Query', allFilms?: { __typename?: 'FilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null, allSpecies?: { __typename?: 'SpeciesConnection', species?: Array<{ __typename?: 'Species', name?: string | null } | null> | null } | null, allPeople?: { __typename?: 'PeopleConnection', people?: Array<{ __typename?: 'Person', gender?: string | null, eyeColor?: string | null } | null> | null } | null };
+
 
 export const GetAllPeopleDocument = gql`
     query GetAllPeople($first: Int, $after: String) {
@@ -1377,3 +1382,55 @@ export type GetAllPeopleQueryHookResult = ReturnType<typeof useGetAllPeopleQuery
 export type GetAllPeopleLazyQueryHookResult = ReturnType<typeof useGetAllPeopleLazyQuery>;
 export type GetAllPeopleSuspenseQueryHookResult = ReturnType<typeof useGetAllPeopleSuspenseQuery>;
 export type GetAllPeopleQueryResult = Apollo.QueryResult<GetAllPeopleQuery, GetAllPeopleQueryVariables>;
+export const GetFilterOptionsDocument = gql`
+    query GetFilterOptions {
+  allFilms {
+    films {
+      title
+    }
+  }
+  allSpecies {
+    species {
+      name
+    }
+  }
+  allPeople {
+    people {
+      gender
+      eyeColor
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetFilterOptionsQuery__
+ *
+ * To run a query within a React component, call `useGetFilterOptionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFilterOptionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFilterOptionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFilterOptionsQuery(baseOptions?: Apollo.QueryHookOptions<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>(GetFilterOptionsDocument, options);
+      }
+export function useGetFilterOptionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>(GetFilterOptionsDocument, options);
+        }
+export function useGetFilterOptionsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>(GetFilterOptionsDocument, options);
+        }
+export type GetFilterOptionsQueryHookResult = ReturnType<typeof useGetFilterOptionsQuery>;
+export type GetFilterOptionsLazyQueryHookResult = ReturnType<typeof useGetFilterOptionsLazyQuery>;
+export type GetFilterOptionsSuspenseQueryHookResult = ReturnType<typeof useGetFilterOptionsSuspenseQuery>;
+export type GetFilterOptionsQueryResult = Apollo.QueryResult<GetFilterOptionsQuery, GetFilterOptionsQueryVariables>;
