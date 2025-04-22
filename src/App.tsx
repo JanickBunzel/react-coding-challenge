@@ -1,51 +1,35 @@
-import { useEffect } from 'react';
-import { Checkbox, Layout } from 'antd';
+import { useEffect, useMemo } from 'react';
+import { Button, Checkbox, Layout, Tooltip } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
-import CharactersTable from './components/CharactersTable';
-import CharacterFilters from './components/CharacterFilters';
-import { useCharacters } from './hooks/useCharacters';
-import { useFavorites } from './hooks/useFavorites';
-import { useFilters } from './hooks/useFilters';
-
-const PAGE_SIZE = 10;
+import CharactersTable from '@/components/CharactersTable';
+import CharacterFilters from '@/components/CharacterFilters';
+import { useCharacters } from '@/hooks/useCharacters';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useFilters } from '@/hooks/useFilters';
 
 function App() {
-    const { characters, loadingInitial, loadingNext, pageInfo, loadMore } =
-        useCharacters({
-            first: PAGE_SIZE,
-        });
+    const { isFavorite, showOnlyFavorites, setShowOnlyFavorites } = useFavorites();
 
-    const {
-        favorites,
-        toggleFavorite,
-        showOnlyFavorites,
-        setShowOnlyFavorites,
-    } = useFavorites();
+    const { filters, updateFilter, resetFilters, hasActiveFilters, filterCharacters } = useFilters();
 
-    const {
-        filters,
-        updateFilter,
-        resetFilters,
-        hasActiveFilters,
-        filteredCharacters,
-    } = useFilters(characters);
+    const { characters, loadingInitial, loadingNext, pageInfo, loadMore } = useCharacters();
+
+    const displayedCharacters = useMemo(() => {
+        return filterCharacters(characters).filter((c) => !showOnlyFavorites || isFavorite(c.id));
+    }, [filterCharacters, characters, showOnlyFavorites, isFavorite]);
 
     useEffect(() => {
-        console.log('Characters data:', characters);
-        console.log('Filtered data:', filteredCharacters);
-    }, [characters, filteredCharacters]);
+        console.log('Characters:', characters);
+    }, [characters]);
 
     return (
         <Layout>
             <Header>
-                <h1>Start Wars Character reference book</h1>
+                <h1>Star Wars Character reference book</h1>
             </Header>
 
             <Content>
-                <Checkbox
-                    checked={showOnlyFavorites}
-                    onChange={(e) => setShowOnlyFavorites(e.target.checked)}
-                >
+                <Checkbox checked={showOnlyFavorites} onChange={(e) => setShowOnlyFavorites(e.target.checked)}>
                     Only favorites
                 </Checkbox>
 
@@ -57,17 +41,24 @@ function App() {
                     hasActiveFilters={hasActiveFilters}
                 />
 
-                <CharactersTable
-                    characters={characters}
-                    filteredCharacters={filteredCharacters}
-                    loadingInitial={loadingInitial}
-                    loadingNext={loadingNext}
-                    hasNextPage={pageInfo.hasNextPage}
-                    loadMore={loadMore}
-                    favorites={favorites}
-                    toggleFavorite={toggleFavorite}
-                    showOnlyFavorites={showOnlyFavorites}
-                />
+                <CharactersTable displayedCharacters={displayedCharacters} loadingInitial={loadingInitial} />
+
+                <Tooltip title={!pageInfo.hasNextPage ? 'All Characters loaded' : ''}>
+                    <Button
+                        type="primary"
+                        onClick={loadMore}
+                        loading={loadingNext}
+                        disabled={loadingNext || !pageInfo.hasNextPage}
+                    >
+                        Load More
+                    </Button>
+                </Tooltip>
+
+                <span>
+                    Showing {displayedCharacters.length}
+                    {displayedCharacters.length < characters.length ? ` out of ${characters.length} ` : ' '}
+                    Characters
+                </span>
             </Content>
         </Layout>
     );

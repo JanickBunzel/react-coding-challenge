@@ -44,10 +44,7 @@ export type Character = {
     isFavorite: boolean;
 };
 
-export const transformToCharacter = (
-    person: Person,
-    favorites: string[] = []
-): Character => {
+export const transformToCharacter = (person: Person, isFavorite: boolean): Character => {
     const base = CharacterSchema.parse(person);
 
     return {
@@ -59,9 +56,7 @@ export const transformToCharacter = (
         eyeColor: base.eyeColor,
         homeworld: base.homeworld?.name ?? null,
         species: base.species?.name ?? null,
-        films: (base.filmConnection?.films ?? [])
-            .map((f) => f.title)
-            .filter((title) => title !== null),
-        isFavorite: favorites.includes(base.id),
+        films: (base.filmConnection?.films ?? []).map((f) => f.title).filter((title) => title !== null),
+        isFavorite,
     };
 };

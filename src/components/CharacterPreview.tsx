@@ -3,26 +3,20 @@ import DescriptionsItem from 'antd/es/descriptions/Item';
 import Item from 'antd/es/list/Item';
 import Title from 'antd/es/typography/Title';
 import Text from 'antd/es/typography/Text';
-import { Character } from '@/models/Character';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
+import { Character } from '@/models/Character';
+import { useFavorites } from '@/hooks/useFavorites';
+import { eyeColorToTag } from '@/utils/eyeColorToTag';
 
 type Props = {
     character: Character | null;
     visible: boolean;
     onClose: () => void;
-    eyeColorToTag: (eyeColor: string) => JSX.Element[];
-    favorites: string[];
-    toggleFavorite: (id: string) => void;
 };
 
-const CharacterPreview = ({
-    character,
-    visible,
-    onClose,
-    eyeColorToTag,
-    favorites,
-    toggleFavorite,
-}: Props) => {
+const CharacterPreview = ({ character, visible, onClose }: Props) => {
+    const { favorites, toggleFavorite } = useFavorites();
+
     if (!character) return null;
 
     return (
@@ -84,11 +78,7 @@ const CharacterPreview = ({
             <Title level={5}>Appears in movies:</Title>
 
             {character.films.length > 0 ? (
-                <List
-                    bordered
-                    dataSource={character.films}
-                    renderItem={(film) => <Item>{film}</Item>}
-                />
+                <List bordered dataSource={character.films} renderItem={(film) => <Item>{film}</Item>} />
             ) : (
                 <Text italic>No movies found</Text>
             )}

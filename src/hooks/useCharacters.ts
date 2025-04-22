@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Person, useGetAllPeopleQuery } from '@/graphql/generated';
 import { Character, transformToCharacter } from '@/models/Character';
-import { useFavorites } from './useFavorites';
+import { useFavorites } from '@/hooks/useFavorites';
 
-type Props = {
-    first: number;
-};
+const PAGE_SIZE = 10;
 
-export const useCharacters = ({ first }: Props) => {
+export const useCharacters = () => {
     const [characters, setCharacters] = useState<Character[]>([]);
-    const { favorites } = useFavorites();
+    const { isFavorite } = useFavorites();
 
     const { loading, error, data, fetchMore } = useGetAllPeopleQuery({
-        variables: { first, after: null },
+        variables: { first: PAGE_SIZE, after: null },
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'cache-first',
     });
@@ -34,10 +32,8 @@ export const useCharacters = ({ first }: Props) => {
                 const pervIds = new Set(prev.map((c) => c.id));
 
                 const incomingCharacters = (page.allPeople?.people ?? [])
-                    .filter(
-                        (p): p is Person => p !== null && !pervIds.has(p.id)
-                    )
-                    .map((p) => transformToCharacter(p, favorites));
+                    .filter((p): p is Person => p !== null && !pervIds.has(p.id))
+                    .map((p) => transformToCharacter(p, isFavorite(p.id)));
 
                 return [...prev, ...incomingCharacters];
             });
@@ -47,7 +43,7 @@ export const useCharacters = ({ first }: Props) => {
                 endCursor: page.allPeople.pageInfo.endCursor ?? null,
             });
         },
-        [favorites]
+        [isFavorite]
     );
 
     const loadMore = useCallback(() => {
@@ -57,18 +53,17 @@ export const useCharacters = ({ first }: Props) => {
 
         fetchMore({
             variables: {
-                first: first,
+                first: PAGE_SIZE,
                 after: pageInfo.endCursor,
             },
         })
             .then((nextPage) => appendPage(nextPage.data))
             .catch((e) => console.error('Error fetching next page', e))
             .finally(() => setLoadingNext(false));
-    }, [pageInfo, fetchMore, first, appendPage]);
+    }, [pageInfo, fetchMore, appendPage]);
 
     useEffect(() => {
-        if (data?.allPeople?.people && !initialLoadCompleted.current)
-            initialLoadCompleted.current = true;
+        if (data?.allPeople?.people && !initialLoadCompleted.current) initialLoadCompleted.current = true;
 
         appendPage(data);
     }, [data, appendPage]);

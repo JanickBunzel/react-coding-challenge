@@ -1,76 +1,27 @@
-import { useCallback, useMemo, useState } from 'react';
-import {
-    InfoCircleOutlined,
-    ManOutlined,
-    StarFilled,
-    StarOutlined,
-    WomanOutlined,
-} from '@ant-design/icons';
-import { Button, Space, Table, Tag, Tooltip } from 'antd';
+import { useMemo, useState } from 'react';
+import { InfoCircleOutlined, ManOutlined, StarFilled, StarOutlined, WomanOutlined } from '@ant-design/icons';
+import { Button, Space, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { Character } from '@/models/Character';
 import CharacterPreview from '@/components/CharacterPreview';
+import { useFavorites } from '@/hooks/useFavorites';
+import { eyeColorToTag } from '@/utils/eyeColorToTag';
 
 type Props = {
-    characters: Character[];
-    filteredCharacters: Character[];
+    displayedCharacters: Character[];
     loadingInitial: boolean;
-    loadingNext: boolean;
-    hasNextPage: boolean;
-    loadMore?: () => void;
-    favorites: string[];
-    toggleFavorite: (id: string) => void;
-    showOnlyFavorites?: boolean;
 };
 
-const CharactersTable = ({
-    characters,
-    filteredCharacters,
-    loadingInitial,
-    loadingNext,
-    hasNextPage,
-    loadMore,
-    favorites = [],
-    toggleFavorite,
-    showOnlyFavorites = false,
-}: Props) => {
-    const [selectedCharacter, setSelectedCharacter] =
-        useState<Character | null>(null);
+const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
+    const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
     const [showDetails, setShowDetails] = useState(false);
+
+    const { favorites, toggleFavorite } = useFavorites();
 
     const handleViewCharacterDetails = (character: Character) => {
         setSelectedCharacter(character);
         setShowDetails(true);
     };
-
-    const eyeColorToTag = useCallback((eyeColor: string): JSX.Element[] => {
-        if (!eyeColor) return [<Tag>-</Tag>];
-
-        const colorMap: Record<string, string> = {
-            blue: 'blue',
-            brown: 'brown',
-            red: 'red',
-            yellow: 'gold',
-            green: 'green',
-            orange: 'orange',
-            black: 'black',
-        };
-
-        return eyeColor
-            .split(',')
-            .map((c) => c.trim().toLowerCase())
-            .map((c) => (
-                <Tag color={colorMap[c] || 'default'} key={c}>
-                    {c}
-                </Tag>
-            ));
-    }, []);
-
-    const displayedCharacters = useMemo(() => {
-        return showOnlyFavorites
-            ? filteredCharacters.filter((c) => favorites.includes(c.id))
-            : filteredCharacters;
-    }, [showOnlyFavorites, filteredCharacters, favorites]);
 
     const columns = useMemo<ColumnsType<Character>>(
         () => [
@@ -84,9 +35,7 @@ const CharactersTable = ({
                             type="text"
                             icon={
                                 favorites.includes(character.id) ? (
-                                    <StarFilled
-                                        style={{ color: 'goldenrod' }}
-                                    />
+                                    <StarFilled style={{ color: 'goldenrod' }} />
                                 ) : (
                                     <StarOutlined />
                                 )
@@ -96,9 +45,7 @@ const CharactersTable = ({
                         <Button
                             type="text"
                             icon={<InfoCircleOutlined />}
-                            onClick={() =>
-                                handleViewCharacterDetails(character)
-                            }
+                            onClick={() => handleViewCharacterDetails(character)}
                         />
                     </Space>
                 ),
@@ -140,13 +87,9 @@ const CharactersTable = ({
                 render: (gender) => {
                     switch (gender) {
                         case 'male':
-                            return (
-                                <ManOutlined style={{ color: 'darkblue' }} />
-                            );
+                            return <ManOutlined style={{ color: 'darkblue' }} />;
                         case 'female':
-                            return (
-                                <WomanOutlined style={{ color: 'orchid' }} />
-                            );
+                            return <WomanOutlined style={{ color: 'orchid' }} />;
                         default:
                             return gender ? gender : '-';
                     }
@@ -159,7 +102,7 @@ const CharactersTable = ({
                 render: (eyeColor) => eyeColorToTag(eyeColor),
             },
         ],
-        [favorites]
+        [favorites, toggleFavorite]
     );
 
     return (
@@ -172,32 +115,10 @@ const CharactersTable = ({
                 pagination={false}
             />
 
-            <Tooltip title={!hasNextPage ? 'All Characters loaded' : ''}>
-                <Button
-                    type="primary"
-                    onClick={loadMore}
-                    loading={loadingNext}
-                    disabled={loadingNext || !hasNextPage}
-                >
-                    Load More
-                </Button>
-            </Tooltip>
-
-            <span>
-                Showing {displayedCharacters.length}
-                {displayedCharacters.length < characters.length
-                    ? ` out of ${characters.length} `
-                    : ' '}
-                Characters
-            </span>
-
             <CharacterPreview
                 character={selectedCharacter}
                 visible={showDetails}
                 onClose={() => setShowDetails(false)}
-                eyeColorToTag={eyeColorToTag}
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
             />
         </>
     );

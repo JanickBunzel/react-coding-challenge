@@ -33,7 +33,7 @@ export const getFilterOptions = (
         }));
 };
 
-export const useFilters = (characters: Character[]) => {
+export const useFilters = () => {
     const [filters, setFilters] = useState<Filters>({
         gender: [],
         eyeColor: [],
@@ -47,7 +47,7 @@ export const useFilters = (characters: Character[]) => {
                 ...prev,
                 [field]: selected,
             })),
-        [filters]
+        []
     );
 
     const resetFilters = useCallback(
@@ -63,43 +63,32 @@ export const useFilters = (characters: Character[]) => {
 
     const hasActiveFilters = Object.values(filters).some((vs) => vs.length > 0);
 
-    const filteredCharacters = characters.filter((c) => {
-        if (
-            filters.gender.length > 0 &&
-            !filters.gender.includes(c.gender || 'n/a')
-        ) {
-            return false;
-        }
+    const filterCharacters = (characters: Character[]): Character[] =>
+        characters.filter((c) => {
+            if (filters.gender.length > 0 && !filters.gender.includes(c.gender || 'n/a')) {
+                return false;
+            }
 
-        if (
-            filters.eyeColor.length > 0 &&
-            !filters.eyeColor.some((ec) => ec === c.eyeColor)
-        ) {
-            return false;
-        }
+            if (filters.eyeColor.length > 0 && !filters.eyeColor.some((ec) => ec === c.eyeColor)) {
+                return false;
+            }
 
-        if (
-            filters.species.length > 0 &&
-            !filters.species.includes(c.species || '')
-        ) {
-            return false;
-        }
+            if (filters.species.length > 0 && !filters.species.includes(c.species || '')) {
+                return false;
+            }
 
-        if (
-            filters.films.length > 0 &&
-            !filters.films.some((f) => c.films.includes(f))
-        ) {
-            return false;
-        }
+            if (filters.films.length > 0 && !filters.films.some((f) => c.films.includes(f))) {
+                return false;
+            }
 
-        return true;
-    });
+            return true;
+        });
 
     return {
         filters,
         updateFilter,
         resetFilters,
         hasActiveFilters,
-        filteredCharacters,
+        filterCharacters,
     };
 };

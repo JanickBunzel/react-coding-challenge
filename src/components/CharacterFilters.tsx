@@ -11,13 +11,7 @@ type Props = {
     hasActiveFilters: boolean;
 };
 
-const CharacterFilters = ({
-    characters,
-    filters,
-    updateFilter,
-    resetFilters,
-    hasActiveFilters,
-}: Props) => {
+const CharacterFilters = ({ characters, filters, updateFilter, resetFilters, hasActiveFilters }: Props) => {
     const filterOptions = useMemo(() => {
         return {
             gender: getFilterOptions(characters, 'gender'),
@@ -27,15 +21,7 @@ const CharacterFilters = ({
         };
     }, [characters]);
 
-    const createSelect = ({
-        mode,
-        id,
-        placeholder,
-    }: {
-        mode?: 'multiple';
-        id: keyof Filters;
-        placeholder: string;
-    }) => {
+    const createSelect = ({ mode, id, placeholder }: { mode?: 'multiple'; id: keyof Filters; placeholder: string }) => {
         return (
             <Select
                 mode={mode ?? undefined}
@@ -45,11 +31,7 @@ const CharacterFilters = ({
                 placeholder={placeholder}
                 value={filters[id] as string[]}
                 onChange={(selected) => {
-                    const values = Array.isArray(selected)
-                        ? selected
-                        : selected
-                          ? [selected]
-                          : [];
+                    const values = Array.isArray(selected) ? selected : selected ? [selected] : [];
                     updateFilter(id, values);
                 }}
                 options={filterOptions[id]}
@@ -82,9 +64,7 @@ const CharacterFilters = ({
                     placeholder: 'Film',
                 })}
 
-                {hasActiveFilters && (
-                    <Button onClick={resetFilters}>Clear Filters</Button>
-                )}
+                {hasActiveFilters && <Button onClick={resetFilters}>Clear Filters</Button>}
             </Space>
         </Card>
     );
