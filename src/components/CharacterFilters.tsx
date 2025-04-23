@@ -10,51 +10,56 @@ type Props = {
 };
 
 const CharacterFilters = ({ filters, updateFilter, resetFilters, hasActiveFilters }: Props) => {
-    const { filterValues } = useFilterOptions();
+    const { filterValues, loadFilterOptions } = useFilterOptions();
 
-    const createSelect = ({ mode, id, placeholder }: { mode?: 'multiple'; id: keyof Filters; placeholder: string }) => {
+    const createSelect = ({
+        mode,
+        filter,
+        placeholder,
+    }: {
+        mode?: 'multiple';
+        filter: keyof Filters;
+        placeholder: string;
+    }) => {
         return (
             <Select
                 mode={mode ?? undefined}
                 allowClear
                 style={{ width: 150 }}
-                onClear={() => updateFilter(id, [])}
+                onClear={() => updateFilter(filter, [])}
                 placeholder={placeholder}
-                value={filters[id] as string[]}
+                value={filters[filter] as string[]}
                 onChange={(selected) => {
                     const values = Array.isArray(selected) ? selected : selected ? [selected] : [];
-                    updateFilter(id, values);
+                    updateFilter(filter, values);
                 }}
-                options={filterValues[id].map((v) => ({
-                    label: v,
-                    value: v,
-                }))}
+                options={filterValues[filter]}
             />
         );
     };
 
     return (
-        <Card>
+        <Card onClick={loadFilterOptions}>
             <Space wrap>
                 {createSelect({
-                    id: 'gender',
+                    filter: 'gender',
                     placeholder: 'Gender',
                 })}
 
                 {createSelect({
                     mode: 'multiple',
-                    id: 'eyeColor',
+                    filter: 'eyeColor',
                     placeholder: 'Eye Color',
                 })}
 
                 {createSelect({
                     mode: 'multiple',
-                    id: 'species',
+                    filter: 'species',
                     placeholder: 'Species',
                 })}
 
                 {createSelect({
-                    id: 'films',
+                    filter: 'films',
                     placeholder: 'Film',
                 })}
 

@@ -1,4 +1,4 @@
-query GetAllPeople($first: Int, $after: String) {
+query GetAllPeople($first: Int!, $after: String) {
     allPeople(first: $first, after: $after) {
         pageInfo {
             hasNextPage
@@ -15,12 +15,8 @@ query GetAllPeople($first: Int, $after: String) {
                 name
             }
             species {
+                id
                 name
-            }
-            filmConnection {
-                films {
-                    title
-                }
             }
         }
     }

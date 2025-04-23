@@ -1306,21 +1306,35 @@ export type VehiclesEdge = {
 };
 
 export type GetAllPeopleQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']['input']>;
+  first: Scalars['Int']['input'];
   after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetAllPeopleQuery = { __typename?: 'Query', allPeople?: { __typename?: 'PeopleConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, people?: Array<{ __typename?: 'Person', id: string, name?: string | null, eyeColor?: string | null, gender?: string | null, height?: number | null, mass?: number | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', name?: string | null } | null, filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null> | null } | null };
+export type GetAllPeopleQuery = { __typename?: 'Query', allPeople?: { __typename?: 'PeopleConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, people?: Array<{ __typename?: 'Person', id: string, name?: string | null, eyeColor?: string | null, gender?: string | null, height?: number | null, mass?: number | null, homeworld?: { __typename?: 'Planet', name?: string | null } | null, species?: { __typename?: 'Species', id: string, name?: string | null } | null } | null> | null } | null };
+
+export type GetCharacterFilmsQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetCharacterFilmsQuery = { __typename?: 'Query', person?: { __typename?: 'Person', filmConnection?: { __typename?: 'PersonFilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null } | null };
+
+export type GetFilmCharactersQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetFilmCharactersQuery = { __typename?: 'Query', film?: { __typename?: 'Film', title?: string | null, characterConnection?: { __typename?: 'FilmCharactersConnection', characters?: Array<{ __typename?: 'Person', id: string } | null> | null } | null } | null };
 
 export type GetFilterOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFilterOptionsQuery = { __typename?: 'Query', allFilms?: { __typename?: 'FilmsConnection', films?: Array<{ __typename?: 'Film', title?: string | null } | null> | null } | null, allSpecies?: { __typename?: 'SpeciesConnection', species?: Array<{ __typename?: 'Species', name?: string | null } | null> | null } | null, allPeople?: { __typename?: 'PeopleConnection', people?: Array<{ __typename?: 'Person', gender?: string | null, eyeColor?: string | null } | null> | null } | null };
+export type GetFilterOptionsQuery = { __typename?: 'Query', allFilms?: { __typename?: 'FilmsConnection', films?: Array<{ __typename?: 'Film', id: string, title?: string | null } | null> | null } | null, allSpecies?: { __typename?: 'SpeciesConnection', species?: Array<{ __typename?: 'Species', id: string, name?: string | null } | null> | null } | null, allPeople?: { __typename?: 'PeopleConnection', people?: Array<{ __typename?: 'Person', gender?: string | null, eyeColor?: string | null } | null> | null } | null };
 
 
 export const GetAllPeopleDocument = gql`
-    query GetAllPeople($first: Int, $after: String) {
+    query GetAllPeople($first: Int!, $after: String) {
   allPeople(first: $first, after: $after) {
     pageInfo {
       hasNextPage
@@ -1337,12 +1351,8 @@ export const GetAllPeopleDocument = gql`
         name
       }
       species {
+        id
         name
-      }
-      filmConnection {
-        films {
-          title
-        }
       }
     }
   }
@@ -1366,7 +1376,7 @@ export const GetAllPeopleDocument = gql`
  *   },
  * });
  */
-export function useGetAllPeopleQuery(baseOptions?: Apollo.QueryHookOptions<GetAllPeopleQuery, GetAllPeopleQueryVariables>) {
+export function useGetAllPeopleQuery(baseOptions: Apollo.QueryHookOptions<GetAllPeopleQuery, GetAllPeopleQueryVariables> & ({ variables: GetAllPeopleQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetAllPeopleQuery, GetAllPeopleQueryVariables>(GetAllPeopleDocument, options);
       }
@@ -1382,15 +1392,106 @@ export type GetAllPeopleQueryHookResult = ReturnType<typeof useGetAllPeopleQuery
 export type GetAllPeopleLazyQueryHookResult = ReturnType<typeof useGetAllPeopleLazyQuery>;
 export type GetAllPeopleSuspenseQueryHookResult = ReturnType<typeof useGetAllPeopleSuspenseQuery>;
 export type GetAllPeopleQueryResult = Apollo.QueryResult<GetAllPeopleQuery, GetAllPeopleQueryVariables>;
+export const GetCharacterFilmsDocument = gql`
+    query GetCharacterFilms($id: ID!) {
+  person(id: $id) {
+    filmConnection {
+      films {
+        title
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCharacterFilmsQuery__
+ *
+ * To run a query within a React component, call `useGetCharacterFilmsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCharacterFilmsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCharacterFilmsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCharacterFilmsQuery(baseOptions: Apollo.QueryHookOptions<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables> & ({ variables: GetCharacterFilmsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables>(GetCharacterFilmsDocument, options);
+      }
+export function useGetCharacterFilmsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables>(GetCharacterFilmsDocument, options);
+        }
+export function useGetCharacterFilmsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables>(GetCharacterFilmsDocument, options);
+        }
+export type GetCharacterFilmsQueryHookResult = ReturnType<typeof useGetCharacterFilmsQuery>;
+export type GetCharacterFilmsLazyQueryHookResult = ReturnType<typeof useGetCharacterFilmsLazyQuery>;
+export type GetCharacterFilmsSuspenseQueryHookResult = ReturnType<typeof useGetCharacterFilmsSuspenseQuery>;
+export type GetCharacterFilmsQueryResult = Apollo.QueryResult<GetCharacterFilmsQuery, GetCharacterFilmsQueryVariables>;
+export const GetFilmCharactersDocument = gql`
+    query GetFilmCharacters($id: ID!) {
+  film(id: $id) {
+    title
+    characterConnection {
+      characters {
+        id
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetFilmCharactersQuery__
+ *
+ * To run a query within a React component, call `useGetFilmCharactersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFilmCharactersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFilmCharactersQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetFilmCharactersQuery(baseOptions: Apollo.QueryHookOptions<GetFilmCharactersQuery, GetFilmCharactersQueryVariables> & ({ variables: GetFilmCharactersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFilmCharactersQuery, GetFilmCharactersQueryVariables>(GetFilmCharactersDocument, options);
+      }
+export function useGetFilmCharactersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFilmCharactersQuery, GetFilmCharactersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFilmCharactersQuery, GetFilmCharactersQueryVariables>(GetFilmCharactersDocument, options);
+        }
+export function useGetFilmCharactersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFilmCharactersQuery, GetFilmCharactersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFilmCharactersQuery, GetFilmCharactersQueryVariables>(GetFilmCharactersDocument, options);
+        }
+export type GetFilmCharactersQueryHookResult = ReturnType<typeof useGetFilmCharactersQuery>;
+export type GetFilmCharactersLazyQueryHookResult = ReturnType<typeof useGetFilmCharactersLazyQuery>;
+export type GetFilmCharactersSuspenseQueryHookResult = ReturnType<typeof useGetFilmCharactersSuspenseQuery>;
+export type GetFilmCharactersQueryResult = Apollo.QueryResult<GetFilmCharactersQuery, GetFilmCharactersQueryVariables>;
 export const GetFilterOptionsDocument = gql`
     query GetFilterOptions {
   allFilms {
     films {
+      id
       title
     }
   }
   allSpecies {
     species {
+      id
       name
     }
   }
