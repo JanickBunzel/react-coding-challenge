@@ -1,29 +1,30 @@
 import { useMemo, useState } from 'react';
-import { InfoCircleOutlined, ManOutlined, StarFilled, StarOutlined, WomanOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, ManOutlined, WomanOutlined } from '@ant-design/icons';
 import { Button, Space, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import { Character } from '@/models/Character';
 import CharacterPreview from '@/components/CharacterPreview';
 import { useFavorites } from '@/hooks/useFavorites';
 import { eyeColorToTag } from '@/utils/eyeColorToTag';
+import { Person } from '@/graphql/generated';
+import FavoritesButton from './FavoritesButton';
 
 type Props = {
-    displayedCharacters: Character[];
+    displayedCharacters: Person[];
     loadingInitial: boolean;
 };
 
 const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
-    const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+    const [selectedCharacter, setSelectedCharacter] = useState<Person | null>(null);
     const [showDetails, setShowDetails] = useState(false);
 
     const { favorites, toggleFavorite } = useFavorites();
 
-    const handleViewCharacterDetails = (character: Character) => {
+    const handleViewCharacterDetails = (character: Person) => {
         setSelectedCharacter(character);
         setShowDetails(true);
     };
 
-    const columns = useMemo<ColumnsType<Character>>(
+    const columns = useMemo<ColumnsType<Person>>(
         () => [
             {
                 title: 'Actions',
@@ -31,17 +32,7 @@ const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
                 width: 120,
                 render: (_, character) => (
                     <Space>
-                        <Button
-                            type="text"
-                            icon={
-                                favorites.includes(character.id) ? (
-                                    <StarFilled style={{ color: 'goldenrod' }} />
-                                ) : (
-                                    <StarOutlined />
-                                )
-                            }
-                            onClick={() => toggleFavorite(character.id)}
-                        />
+                        <FavoritesButton characterId={character.id} isTextType />
                         <Button
                             type="text"
                             icon={<InfoCircleOutlined />}
@@ -64,21 +55,21 @@ const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
             },
             {
                 title: 'Weight',
-                dataIndex: 'weight',
-                key: 'weight',
-                render: (weight) => (weight ? weight + ' kg' : '-'),
+                dataIndex: 'mass',
+                key: 'mass',
+                render: (mass) => (mass ? mass + ' kg' : '-'),
             },
             {
                 title: 'Home Planet',
                 dataIndex: 'homeworld',
                 key: 'homeworld',
-                render: (homeworld) => homeworld || '-',
+                render: (homeworld) => homeworld?.name || '-',
             },
             {
                 title: 'Species',
                 dataIndex: 'species',
                 key: 'species',
-                render: (species) => species || '-',
+                render: (species) => species?.name || '-',
             },
             {
                 title: 'Gender',

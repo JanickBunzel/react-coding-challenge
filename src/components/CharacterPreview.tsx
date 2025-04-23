@@ -3,19 +3,19 @@ import DescriptionsItem from 'antd/es/descriptions/Item';
 import Item from 'antd/es/list/Item';
 import Title from 'antd/es/typography/Title';
 import Text from 'antd/es/typography/Text';
-import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { Character } from '@/models/Character';
-import { useFavorites } from '@/hooks/useFavorites';
 import { eyeColorToTag } from '@/utils/eyeColorToTag';
+import { useCharacterFilms } from '@/hooks/useCharacterFilms';
+import { Person } from '@/graphql/generated';
+import FavoritesButton from './FavoritesButton';
 
 type Props = {
-    character: Character | null;
+    character: Person | null;
     visible: boolean;
     onClose: () => void;
 };
 
 const CharacterPreview = ({ character, visible, onClose }: Props) => {
-    const { favorites, toggleFavorite } = useFavorites();
+    const { filmsLoading, films } = useCharacterFilms(character?.id || '');
 
     if (!character) return null;
 
@@ -26,16 +26,7 @@ const CharacterPreview = ({ character, visible, onClose }: Props) => {
             onCancel={onClose}
             footer={
                 <>
-                    <Button
-                        icon={
-                            favorites.includes(character.id) ? (
-                                <StarFilled style={{ color: 'goldenrod' }} />
-                            ) : (
-                                <StarOutlined />
-                            )
-                        }
-                        onClick={() => toggleFavorite(character.id)}
-                    />
+                    <FavoritesButton characterId={character.id} />
                     <Button type="primary" onClick={onClose}>
                         Close
                     </Button>
@@ -50,15 +41,15 @@ const CharacterPreview = ({ character, visible, onClose }: Props) => {
                     },
                     {
                         label: 'Weight',
-                        content: (character.weight || '-') + ' kg',
+                        content: (character.mass || '-') + ' kg',
                     },
                     {
                         label: 'Home Planet',
-                        content: character.homeworld || '-',
+                        content: character.homeworld?.name || '-',
                     },
                     {
                         label: 'Species',
-                        content: character.species || '-',
+                        content: character.species?.name || '-',
                     },
                     {
                         label: 'Gender',
@@ -77,10 +68,10 @@ const CharacterPreview = ({ character, visible, onClose }: Props) => {
 
             <Title level={5}>Appears in movies:</Title>
 
-            {character.films.length > 0 ? (
-                <List bordered dataSource={character.films} renderItem={(film) => <Item>{film}</Item>} />
+            {films.length > 0 ? (
+                <List bordered dataSource={films} renderItem={(film) => <Item>{film}</Item>} />
             ) : (
-                <Text italic>No movies found</Text>
+                <Text italic>{filmsLoading ? 'Loading...' : 'No movies found'}</Text>
             )}
         </Modal>
     );

@@ -1,0 +1,9 @@
+query GetCharacterFilms ($id: ID!) {
+    person(id: $id) {
+        filmConnection {
+            films {
+                title
+            }
+        }
+    }
+}

@@ -1,12 +1,14 @@
 query GetFilterOptions {
     allFilms {
         films {
+            id
             title
         }
     }
 
     allSpecies {
         species {
+            id
             name
         }
     }

@@ -1,43 +1,76 @@
+import { useEffect, useState } from 'react';
 import { useGetFilterOptionsQuery } from '@/graphql/generated';
 import { Filters } from '@/models/Filters';
-import { useEffect, useState } from 'react';
+
+type Option = {
+    value: string;
+    label: string;
+};
+
+const getUniqueOptions = (options: Option[]) => {
+    const values = new Set<string>();
+    return options.filter((o) => {
+        if (values.has(o.value)) return false;
+        values.add(o.value);
+        return true;
+    });
+};
 
 export const useFilterOptions = () => {
-    const [filterValues, setFilterValues] = useState<Filters>({
-        gender: ['Loading...'],
-        eyeColor: ['Loading...'],
-        species: ['Loading...'],
-        films: ['Loading...'],
+    const [filterValues, setFilterValues] = useState<{
+        [K in keyof Filters]: Option[];
+    }>({
+        gender: [{ value: '', label: 'Loading...' }],
+        eyeColor: [{ value: '', label: 'Loading...' }],
+        species: [{ value: '', label: 'Loading...' }],
+        films: [{ value: '', label: 'Loading...' }],
     });
 
-    const { data } = useGetFilterOptionsQuery();
+    const [skipOptionsQuery, setSkipOptionsQuery] = useState<boolean>(true);
+    const loadFilterOptions = () => setSkipOptionsQuery(false);
+    const { data } = useGetFilterOptionsQuery({ skip: skipOptionsQuery });
 
     useEffect(() => {
         const allGenders = (data?.allPeople?.people || [])
             .filter((p): p is { gender: string; eyeColor?: string } => !!p && !!p.gender)
-            .map((p) => p.gender);
+            .map((p) => ({
+                value: p.gender,
+                label: p.gender,
+            }));
 
         const allEyeColors = (data?.allPeople?.people || [])
             .filter((p): p is { gender?: string; eyeColor: string } => !!p && !!p.eyeColor)
-            .map((p) => p.eyeColor);
+            .flatMap((p) =>
+                p.eyeColor.split(',').map((color) => ({
+                    value: color.trim(),
+                    label: color.trim(),
+                }))
+            );
 
         const allSpecies = (data?.allSpecies?.species || [])
-            .filter((s): s is { name: string } => !!s && !!s.name)
-            .map((s) => s.name);
+            .filter((s): s is { id: string; name: string } => !!s && !!s.id && !!s.name)
+            .map((s) => ({
+                value: s.id,
+                label: s.name,
+            }));
 
         const allFilms = (data?.allFilms?.films || [])
-            .filter((f): f is { title: string } => !!f && !!f.title)
-            .map((f) => f.title);
+            .filter((f): f is { id: string; title: string } => !!f && !!f.id && !!f.title)
+            .map((f) => ({
+                value: f.id,
+                label: f.title,
+            }));
 
         setFilterValues({
-            gender: Array.from(new Set(allGenders)),
-            eyeColor: Array.from(new Set(allEyeColors)),
-            species: Array.from(new Set(allSpecies)),
-            films: Array.from(new Set(allFilms)),
+            gender: getUniqueOptions(allGenders),
+            eyeColor: getUniqueOptions(allEyeColors),
+            species: getUniqueOptions(allSpecies),
+            films: getUniqueOptions(allFilms),
         });
     }, [data]);
 
     return {
         filterValues,
+        loadFilterOptions,
     };
 };
