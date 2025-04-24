@@ -3,10 +3,11 @@ import DescriptionsItem from 'antd/es/descriptions/Item';
 import Item from 'antd/es/list/Item';
 import Title from 'antd/es/typography/Title';
 import Text from 'antd/es/typography/Text';
+import { GoogleOutlined } from '@ant-design/icons';
 import { Person } from '@/graphql/generated';
-import { useCharacterFilms } from './useCharacterFilms';
 import FavoritesButton from '@/components/FavoritesButton';
 import EyeColorTag from '@/components/EyeColorTag';
+import { useCharacterFilms } from './useCharacterFilms';
 
 type Props = {
     character: Person | null;
@@ -27,6 +28,12 @@ const CharacterPreview = ({ character, visible, onClose }: Props) => {
             footer={
                 <>
                     <FavoritesButton characterId={character.id} />
+                    <Button
+                        icon={<GoogleOutlined />}
+                        href={`https://www.google.com/search?q=${encodeURIComponent(character?.name || '')}+Star+Wars`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    />
                     <Button type="primary" onClick={onClose}>
                         Close
                     </Button>
