@@ -1,6 +1,6 @@
 import { Button, Card, Select, Space } from 'antd';
 import { Filters } from '@/models/Filters';
-import { useFilterOptions } from '@/hooks/useFilterOptions';
+import { useFilterOptions } from './useFilterOptions';
 
 type Props = {
     filters: Filters;

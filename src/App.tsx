@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Button, Checkbox, Layout, Tooltip } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
 import CharactersTable from '@/components/CharactersTable';
-import CharacterFilters from '@/components/CharacterFilters';
+import CharacterFilters from '@/components/characterFilters/CharacterFilters';
 import { useCharacters } from '@/hooks/useCharacters';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useFilters } from '@/hooks/useFilters';
@@ -15,12 +15,8 @@ function App() {
     const { characters, loadingInitial, loadingNext, pageInfo, loadMore } = useCharacters();
 
     const displayedCharacters = useMemo(() => {
-        return filterCharacters(characters).filter((c) => !showOnlyFavorites || isFavorite(c.id));
+        return filterCharacters(characters).filter((character) => !showOnlyFavorites || isFavorite(character.id));
     }, [filterCharacters, characters, showOnlyFavorites, isFavorite]);
-
-    useEffect(() => {
-        console.log('Characters:', characters);
-    }, [characters]);
 
     return (
         <Layout>

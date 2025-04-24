@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useGetFilterOptionsQuery } from '@/graphql/generated';
 import { Filters } from '@/models/Filters';
 
+const LOAD_FILTER_OPTIONS: 'lazy' | 'eager' = 'lazy';
+
 type Option = {
     value: string;
     label: string;
@@ -9,11 +11,14 @@ type Option = {
 
 const getUniqueOptions = (options: Option[]) => {
     const values = new Set<string>();
-    return options.filter((o) => {
-        if (values.has(o.value)) return false;
-        values.add(o.value);
+
+    const uniqueValues = options.filter((option) => {
+        if (values.has(option.value)) return false;
+        values.add(option.value);
         return true;
     });
+
+    return uniqueValues.sort((a, b) => a.label.localeCompare(b.label));
 };
 
 export const useFilterOptions = () => {
@@ -26,39 +31,40 @@ export const useFilterOptions = () => {
         films: [{ value: '', label: 'Loading...' }],
     });
 
+    // Lazy loading the filterOptions as "we want to stay as efficient as possible" (UX tradeoff)
     const [skipOptionsQuery, setSkipOptionsQuery] = useState<boolean>(true);
     const loadFilterOptions = () => setSkipOptionsQuery(false);
-    const { data } = useGetFilterOptionsQuery({ skip: skipOptionsQuery });
+    const { data } = useGetFilterOptionsQuery({ skip: skipOptionsQuery && LOAD_FILTER_OPTIONS === 'lazy' });
 
     useEffect(() => {
         const allGenders = (data?.allPeople?.people || [])
-            .filter((p): p is { gender: string; eyeColor?: string } => !!p && !!p.gender)
-            .map((p) => ({
-                value: p.gender,
-                label: p.gender,
+            .filter((person): person is { gender: string; eyeColor?: string } => !!person && !!person.gender)
+            .map((person) => ({
+                value: person.gender,
+                label: person.gender,
             }));
 
         const allEyeColors = (data?.allPeople?.people || [])
-            .filter((p): p is { gender?: string; eyeColor: string } => !!p && !!p.eyeColor)
-            .flatMap((p) =>
-                p.eyeColor.split(',').map((color) => ({
+            .filter((person): person is { gender?: string; eyeColor: string } => !!person && !!person.eyeColor)
+            .flatMap((person) =>
+                person.eyeColor.split(',').map((color) => ({
                     value: color.trim(),
                     label: color.trim(),
                 }))
             );
 
         const allSpecies = (data?.allSpecies?.species || [])
-            .filter((s): s is { id: string; name: string } => !!s && !!s.id && !!s.name)
-            .map((s) => ({
-                value: s.id,
-                label: s.name,
+            .filter((species): species is { id: string; name: string } => !!species && !!species.id && !!species.name)
+            .map((species) => ({
+                value: species.id,
+                label: species.name,
             }));
 
         const allFilms = (data?.allFilms?.films || [])
-            .filter((f): f is { id: string; title: string } => !!f && !!f.id && !!f.title)
-            .map((f) => ({
-                value: f.id,
-                label: f.title,
+            .filter((film): film is { id: string; title: string } => !!film && !!film.id && !!film.title)
+            .map((film) => ({
+                value: film.id,
+                label: film.title,
             }));
 
         setFilterValues({

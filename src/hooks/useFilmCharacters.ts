@@ -11,8 +11,8 @@ export const useFilmCharacters = (filmId: string) => {
 
     useEffect(() => {
         const characterIds = (data?.film?.characterConnection?.characters || [])
-            .filter((c): c is { id: string } => !!c && !!c.id)
-            .map((c) => c.id);
+            .filter((character): character is { id: string } => !!character && !!character.id)
+            .map((character) => character.id);
 
         setCharactersByFilmIds(characterIds);
     }, [data]);

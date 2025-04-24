@@ -2,11 +2,10 @@ import { useMemo, useState } from 'react';
 import { InfoCircleOutlined, ManOutlined, WomanOutlined } from '@ant-design/icons';
 import { Button, Space, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import CharacterPreview from '@/components/CharacterPreview';
-import { useFavorites } from '@/hooks/useFavorites';
-import { eyeColorToTag } from '@/utils/eyeColorToTag';
 import { Person } from '@/graphql/generated';
-import FavoritesButton from './FavoritesButton';
+import CharacterPreview from '@/components/characterPreview/CharacterPreview';
+import FavoritesButton from '@/components/FavoritesButton';
+import EyeColorTag from '@/components/EyeColorTag';
 
 type Props = {
     displayedCharacters: Person[];
@@ -16,8 +15,6 @@ type Props = {
 const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
     const [selectedCharacter, setSelectedCharacter] = useState<Person | null>(null);
     const [showDetails, setShowDetails] = useState(false);
-
-    const { favorites, toggleFavorite } = useFavorites();
 
     const handleViewCharacterDetails = (character: Person) => {
         setSelectedCharacter(character);
@@ -90,10 +87,10 @@ const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
                 title: 'Eye Color',
                 dataIndex: 'eyeColor',
                 key: 'eyeColor',
-                render: (eyeColor) => eyeColorToTag(eyeColor),
+                render: (eyeColor) => <EyeColorTag eyeColor={eyeColor} />,
             },
         ],
-        [favorites, toggleFavorite]
+        []
     );
 
     return (

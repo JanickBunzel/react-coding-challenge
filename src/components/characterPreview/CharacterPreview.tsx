@@ -3,10 +3,10 @@ import DescriptionsItem from 'antd/es/descriptions/Item';
 import Item from 'antd/es/list/Item';
 import Title from 'antd/es/typography/Title';
 import Text from 'antd/es/typography/Text';
-import { eyeColorToTag } from '@/utils/eyeColorToTag';
-import { useCharacterFilms } from '@/hooks/useCharacterFilms';
 import { Person } from '@/graphql/generated';
-import FavoritesButton from './FavoritesButton';
+import { useCharacterFilms } from './useCharacterFilms';
+import FavoritesButton from '@/components/FavoritesButton';
+import EyeColorTag from '@/components/EyeColorTag';
 
 type Props = {
     character: Person | null;
@@ -57,11 +57,11 @@ const CharacterPreview = ({ character, visible, onClose }: Props) => {
                     },
                     {
                         label: 'Eye Color',
-                        content: eyeColorToTag(character.eyeColor || '-'),
+                        content: <EyeColorTag eyeColor={character.eyeColor || ''} />,
                     },
-                ].map((cd) => (
-                    <DescriptionsItem label={cd.label} key={cd.label}>
-                        {cd.content}
+                ].map((detail) => (
+                    <DescriptionsItem label={detail.label} key={detail.label}>
+                        {detail.content}
                     </DescriptionsItem>
                 ))}
             </Descriptions>

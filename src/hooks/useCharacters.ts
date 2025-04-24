@@ -22,14 +22,14 @@ export const useCharacters = () => {
     const appendPage = useCallback((page: typeof data) => {
         if (!page?.allPeople?.people) return;
 
-        setCharacters((prev) => {
-            const pervIds = new Set(prev.map((c) => c.id));
+        setCharacters((prevCharacters) => {
+            const prevIds = new Set(prevCharacters.map((c) => c.id));
 
             const incomingCharacters = (page.allPeople?.people ?? []).filter(
-                (p): p is Person => p !== null && !pervIds.has(p.id)
+                (person): person is Person => person !== null && !prevIds.has(person.id)
             );
 
-            return [...prev, ...incomingCharacters];
+            return [...prevCharacters, ...incomingCharacters];
         });
 
         setPageInfo({
@@ -50,7 +50,7 @@ export const useCharacters = () => {
             },
         })
             .then((nextPage) => appendPage(nextPage.data))
-            .catch((e) => console.error('Error fetching next page', e))
+            .catch((error) => console.error('Error fetching next page', error))
             .finally(() => setLoadingNext(false));
     }, [pageInfo, fetchMore, appendPage]);
 
