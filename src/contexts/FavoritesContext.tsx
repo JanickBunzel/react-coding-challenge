@@ -4,6 +4,9 @@ import { FavoritesContext } from '@/contexts/FavoritesContext';
 const FAVORITES_STORAGE_KEY = 'star-wars-favorites';
 const SHOW_ONLY_FAVORITES_KEY = 'show-only-favorites';
 
+// Nebo comment: Ths file should probably be named FavoritesProvider.tsx
+// It is a bit confusing having two files with the same name :)
+
 export const FavoritesProvider = ({ children }: PropsWithChildren) => {
     const [favorites, setFavorites] = useState<string[]>(() => {
         try {

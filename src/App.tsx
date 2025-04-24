@@ -15,9 +15,11 @@ function App() {
     const { characters, loadingInitial, loadingNext, pageInfo, loadMore } = useCharacters();
 
     const displayedCharacters = useMemo(() => {
+        // Nebo Comment: I personally am agains one letter vars unless they are standard iterators (i, j, k), here I would prefer "character" instead of "c". 👇
         return filterCharacters(characters).filter((c) => !showOnlyFavorites || isFavorite(c.id));
     }, [filterCharacters, characters, showOnlyFavorites, isFavorite]);
 
+    // Nebo Comment: I know this is for your testing and debugging purposes, but remove it before sending in the challenge 👇
     useEffect(() => {
         console.log('Characters:', characters);
     }, [characters]);

@@ -16,6 +16,10 @@ const getUniqueOptions = (options: Option[]) => {
     });
 };
 
+// Nebo comment: This part is only about scalability:
+// If this app was to grow, you would probably colocate this hook with the component that is using it.
+// You would use /hooks folder only for hooks that are reused in multiple components in the apps
+
 export const useFilterOptions = () => {
     const [filterValues, setFilterValues] = useState<{
         [K in keyof Filters]: Option[];
