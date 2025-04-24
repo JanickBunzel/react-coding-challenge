@@ -1,5 +1,6 @@
-import { Button, Card, Select, Space } from 'antd';
+import { Button, Checkbox, Select, Space } from 'antd';
 import { Filters } from '@/models/Filters';
+import { useFavorites } from '@/hooks/useFavorites';
 import { useFilterOptions } from './useFilterOptions';
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
 
 const CharacterFilters = ({ filters, updateFilter, resetFilters, hasActiveFilters }: Props) => {
     const { filterValues, loadFilterOptions } = useFilterOptions();
+
+    const { showOnlyFavorites, setShowOnlyFavorites } = useFavorites();
 
     const createSelect = ({
         mode,
@@ -39,33 +42,35 @@ const CharacterFilters = ({ filters, updateFilter, resetFilters, hasActiveFilter
     };
 
     return (
-        <Card onClick={loadFilterOptions}>
-            <Space wrap>
-                {createSelect({
-                    filter: 'gender',
-                    placeholder: 'Gender',
-                })}
+        <Space wrap onClick={loadFilterOptions} className="characters-filters">
+            <Checkbox checked={showOnlyFavorites} onChange={(e) => setShowOnlyFavorites(e.target.checked)}>
+                Only favorites
+            </Checkbox>
 
-                {createSelect({
-                    mode: 'multiple',
-                    filter: 'eyeColor',
-                    placeholder: 'Eye Color',
-                })}
+            {createSelect({
+                filter: 'gender',
+                placeholder: 'Gender',
+            })}
 
-                {createSelect({
-                    mode: 'multiple',
-                    filter: 'species',
-                    placeholder: 'Species',
-                })}
+            {createSelect({
+                mode: 'multiple',
+                filter: 'eyeColor',
+                placeholder: 'Eye Color',
+            })}
 
-                {createSelect({
-                    filter: 'films',
-                    placeholder: 'Film',
-                })}
+            {createSelect({
+                mode: 'multiple',
+                filter: 'species',
+                placeholder: 'Species',
+            })}
 
-                {hasActiveFilters && <Button onClick={resetFilters}>Clear Filters</Button>}
-            </Space>
-        </Card>
+            {createSelect({
+                filter: 'films',
+                placeholder: 'Film',
+            })}
+
+            {hasActiveFilters && <Button onClick={resetFilters}>Clear Filters</Button>}
+        </Space>
     );
 };
 

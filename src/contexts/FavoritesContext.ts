@@ -2,9 +2,9 @@ import { createContext } from 'react';
 
 type FavoritesContext = {
     favorites: string[];
-    showOnlyFavorites: boolean;
-    toggleFavorite: (id: string) => void;
     isFavorite: (id: string) => boolean;
+    toggleFavorite: (id: string) => void;
+    showOnlyFavorites: boolean;
     setShowOnlyFavorites: (value: boolean) => void;
 };
 

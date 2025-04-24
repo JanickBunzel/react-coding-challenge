@@ -1,34 +1,28 @@
 import { useMemo } from 'react';
-import { Button, Checkbox, Layout, Tooltip } from 'antd';
+import { Button, Layout, Space, Tooltip } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
+import Title from 'antd/es/typography/Title';
 import CharactersTable from '@/components/CharactersTable';
 import CharacterFilters from '@/components/characterFilters/CharacterFilters';
 import { useCharacters } from '@/hooks/useCharacters';
-import { useFavorites } from '@/hooks/useFavorites';
 import { useFilters } from '@/hooks/useFilters';
 
 function App() {
-    const { isFavorite, showOnlyFavorites, setShowOnlyFavorites } = useFavorites();
-
     const { filters, updateFilter, resetFilters, hasActiveFilters, filterCharacters } = useFilters();
 
     const { characters, loadingInitial, loadingNext, pageInfo, loadMore } = useCharacters();
 
-    const displayedCharacters = useMemo(() => {
-        return filterCharacters(characters).filter((character) => !showOnlyFavorites || isFavorite(character.id));
-    }, [filterCharacters, characters, showOnlyFavorites, isFavorite]);
+    const displayedCharacters = useMemo(() => filterCharacters(characters), [characters, filterCharacters]);
 
     return (
         <Layout>
             <Header>
-                <h1>Star Wars Character reference book</h1>
+                <Title level={1} className="text-center">
+                    Star Wars Character reference book
+                </Title>
             </Header>
 
             <Content>
-                <Checkbox checked={showOnlyFavorites} onChange={(e) => setShowOnlyFavorites(e.target.checked)}>
-                    Only favorites
-                </Checkbox>
-
                 <CharacterFilters
                     filters={filters}
                     updateFilter={updateFilter}
@@ -38,22 +32,24 @@ function App() {
 
                 <CharactersTable displayedCharacters={displayedCharacters} loadingInitial={loadingInitial} />
 
-                <Tooltip title={!pageInfo.hasNextPage ? 'All Characters loaded' : ''}>
-                    <Button
-                        type="primary"
-                        onClick={loadMore}
-                        loading={loadingNext}
-                        disabled={loadingNext || !pageInfo.hasNextPage}
-                    >
-                        Load More
-                    </Button>
-                </Tooltip>
+                <Space className="characters-book-info">
+                    <span>
+                        Showing {displayedCharacters.length}
+                        {displayedCharacters.length < characters.length ? ` out of ${characters.length} ` : ' '}
+                        Characters
+                    </span>
 
-                <span>
-                    Showing {displayedCharacters.length}
-                    {displayedCharacters.length < characters.length ? ` out of ${characters.length} ` : ' '}
-                    Characters
-                </span>
+                    <Tooltip title={!pageInfo.hasNextPage ? 'All Characters loaded' : ''}>
+                        <Button
+                            type="primary"
+                            onClick={loadMore}
+                            loading={loadingNext}
+                            disabled={loadingNext || !pageInfo.hasNextPage}
+                        >
+                            Load More
+                        </Button>
+                    </Tooltip>
+                </Space>
             </Content>
         </Layout>
     );

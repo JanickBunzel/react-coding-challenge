@@ -1,6 +1,6 @@
 export type Filters = {
-    gender: string[]; // label
-    eyeColor: string[]; // label
+    gender: string[]; // name
+    eyeColor: string[]; // name
     species: string[]; // id
     films: string[]; // id
 };

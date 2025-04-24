@@ -94,7 +94,7 @@ const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
     );
 
     return (
-        <>
+        <div className="characters-table">
             <Table
                 dataSource={displayedCharacters}
                 columns={columns}
@@ -108,7 +108,7 @@ const CharactersTable = ({ displayedCharacters, loadingInitial }: Props) => {
                 visible={showDetails}
                 onClose={() => setShowDetails(false)}
             />
-        </>
+        </div>
     );
 };
 

@@ -1,8 +1,49 @@
+/* Simple styling as there is no focus on it in this challenge */
+
 body {
     margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans',
-        'Helvetica Neue', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ant Design Components */
+.ant-layout {
+    min-height: 100vh;
+}
+
+.ant-layout-header {
+    background-color: lightgray;
+    flex: 0 0 !important;
+}
+
+.ant-layout-content {
+    margin: 0 auto;
+    max-width: 1080px;
+    width: 95%;
+    padding-bottom: 48px;
+}
+
+/* Custom components */
+.characters-filters {
+    margin-top: 48px;
+}
+
+.characters-table {
+    margin: 24px 0;
+    border: 1px solid #ababab;
+    border-radius: 8px;
+    overflow: hidden;
+    overflow-x: auto;
+}
+.ant-table-row {
+    background-color: white;
+}
+
+.characters-book-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Global classes */
+.text-center {
+    text-align: center;
 }

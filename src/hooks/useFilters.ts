@@ -2,8 +2,11 @@ import { useCallback, useState } from 'react';
 import { Person } from '@/graphql/generated';
 import { Filters } from '@/models/Filters';
 import { useFilmCharacters } from '@/hooks/useFilmCharacters';
+import { useFavorites } from '@/hooks/useFavorites';
 
 export const useFilters = () => {
+    const { isFavorite, showOnlyFavorites } = useFavorites();
+
     const [filters, setFilters] = useState<Filters>({
         gender: [],
         eyeColor: [],
@@ -37,6 +40,11 @@ export const useFilters = () => {
 
     const filterCharacters = (characters: Person[]): Person[] =>
         characters.filter((character) => {
+            // Check character for favorites
+            if (showOnlyFavorites && !isFavorite(character.id)) {
+                return false;
+            }
+
             // Check character for gender filter
             if (filters.gender.length > 0 && !filters.gender.includes(character.gender || 'n/a')) {
                 return false;
